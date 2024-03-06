@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jogo da Bre</title>
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        background-color: #ffccf7; /* Cor de fundo rosa claro */
+    }
+    
+    #container {
+        position: relative;
+        width: 100%;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    #kitty {
+        width: 150px;
+        height: auto;
+        cursor: pointer;
+        position: absolute;
+    }
+
+    #hello-kitty-message {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background-size: cover;
+        border: 2px solid #ff69b4; /* Cor da borda rosa */
+        border-radius: 10px;
+        text-align: center;
+        display: none;
+        color: #ff69b4; /* Cor do texto rosa */
+        font-family: 'Arial', sans-serif;
+    }
+
+    #hello-kitty-message img {
+        width: 100px;
+        height: auto;
+        margin-bottom: 10px;
+    }
+
+    #restart-button {
+        margin-top: 20px;
+        padding: 10px 20px;
+        background-color: #ff69b4; /* Cor de fundo rosa */
+        border: none;
+        border-radius: 5px;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+        display: none; /* Inicia oculto */
+    }
+</style>
+</head>
+<body>
+<div id="container">
+    <img id="kitty" src="kitty.png" alt="Hello Kitty">
+    <div id="hello-kitty-message">
+        <h2>Parabéns!</h2>
+        <p>Você acertou na Hello Kitty!</p>
+        <button id="restart-button">Reiniciar Jogo</button>
+    </div>
+</div>
+
+<audio id="hello-kitty-audio"></audio>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    const kitty = document.getElementById('kitty');
+    const message = document.getElementById('hello-kitty-message');
+    const audio = document.getElementById('hello-kitty-audio');
+    const restartButton = document.getElementById('restart-button');
+    let round = 0; // Contador de rodadas
+    let speed = 1200; // Velocidade inicial de movimento da Hello Kitty
+
+    function moveKitty() {
+        const screenWidth = window.innerWidth - kitty.offsetWidth;
+        const screenHeight = window.innerHeight - kitty.offsetHeight;
+
+        const randomX = Math.floor(Math.random() * screenWidth);
+        const randomY = Math.floor(Math.random() * screenHeight);
+
+        kitty.style.left = `${randomX}px`;
+        kitty.style.top = `${randomY}px`;
+    }
+
+    function handleClick() {
+        audio.play(); // Reproduz o som
+        message.style.display = 'block';
+        kitty.style.display = 'none'; // Oculta a Hello Kitty
+        moveKitty(); // Move a Hello Kitty para uma nova posição
+
+        setTimeout(function() {
+            message.style.display = 'none';
+            kitty.style.display = 'block'; // Mostra a Hello Kitty novamente
+            startNextRound();
+        }, 2000); // Mensagem aparece por 2 segundos, depois reinicia o jogo
+    }
+
+    function startNextRound() {
+        if (round < 5) { // 4 rodadas
+            round++;
+            speed -= 100; // Aumenta a velocidade em 100ms a cada rodada
+            animateKitty();
+            changeBackgroundAndSound();
+        } else {
+            // Fim do jogo
+            alert("Fim do jogo!");
+            round = 1;
+            speed = 1200;
+            restartButton.style.display = 'block'; // Mostra o botão de reiniciar jogo
+        }
+    }
+
+    function changeBackgroundAndSound() {
+        const backgrounds = ['bre2.jpeg', 'bre3.jpeg', 'bre4.jpeg', 'bre5.jpg', 'bre.jpeg']; // Imagens de fundo diferentes para cada rodada
+        const sounds = ['sus.mp3', 'happy.mp3', 'putin.mp3', 'zap.mp3', 'animals.mp3']; // Sons diferentes para cada rodada
+
+        document.body.style.backgroundImage = `url(${backgrounds[round - 1]})`; // Altera a imagem de fundo
+        audio.src = sounds[round - 1]; // Altera o som
+        audio.addEventListener('ended', function() {
+            audio.currentTime = 0; // Reinicia o áudio
+        });
+    }
+
+    kitty.addEventListener('click', handleClick);
+    
+    restartButton.addEventListener('click', function() {
+        message.style.display = 'none';
+        restartButton.style.display = 'none';
+        round = 1;
+        speed = 1200;
+        changeBackgroundAndSound();
+        animateKitty();
+    });
+
+    moveKitty();
+    
+    function animateKitty() {
+        setTimeout(function()
+        {
+            moveKitty();
+            animateKitty(); // Chama recursivamente para continuar movendo a Hello Kitty
+        }, speed);
+    }
+
+    animateKitty();
+});
+</script>
+</body>
+</html>
